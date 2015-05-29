@@ -17,10 +17,10 @@
 #    If the dealer hits 21 the dealer wins.
 #    If the dealer stays we compare the sums and the highest value wins.
 
-# require 'pry'
+require 'pry'
 
-game_data = { :player => { :cards => [], :score => 0 },
-          :dealer => { :cards => [], :score => 0 },
+game_data = { :player => { :hand => [], :score => 0 },
+          :dealer => { :hand => [], :score => 0 },
           :deck => ['AH', '2H', '3H', '4H', '5H', '6H',
                     '7H', '8H', '9H', '10H', 'JH', 'QH', 'KH',
                     'AD', '2D', '3D', '4D', '5D', '6D',
@@ -37,18 +37,20 @@ values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,]
 
 
-card_values = Hash[game_data[:deck].zip values]
+game_data[:card_values] = Hash[game_data[:deck].zip values]
+
+
 
 def draw_board(game_data)
   system 'clear'
   dealer_card_string = " Dealer  "
   player_card_string = " Player  "
 
-  game_data[:dealer][:cards].each do |card|
+  game_data[:dealer][:hand].each do |card|
     dealer_card_string << card + ' '
   end
 
-  game_data[:player][:cards].each do |card|
+  game_data[:player][:hand].each do |card|
     player_card_string << card + ' '
   end
 
@@ -57,19 +59,24 @@ def draw_board(game_data)
   puts ''
   puts player_card_string
   puts ''
+  puts "Dealer has #{game_data[:dealer][:score]}"
+  puts "Player has #{game_data[:player][:score]}"
 end
 
 
 def deal_card(game_data, person)
   card_dealt = game_data[:deck].sample
   game_data[:deck].delete(card_dealt)
-  game_data[person][:cards] << card_dealt
+  game_data[person][:hand] << card_dealt
+  update_total(game_data, person)
   draw_board(game_data)
 end
 
-# def update_total(game_data, person)
-#   game_data(person) =
-# end
+def update_total(game_data, person)
+  sum = 0
+  game_data[person][:hand].each { |card| sum += game_data[:card_values][card] }
+  game_data[person][:score] = sum
+end
 
 def dealers_turn(game_data)
 
@@ -92,10 +99,10 @@ deal_card(game_data, :player)
 def players_turn(game_data)
   while hit_or_stay == 'h'
     deal_card(game_data, :player)
-    # check_for_21()
+    # check_for_21
     # check_for_bust()
   end
 end
 
-players_turn(game_data)
-dealers_turn(game_data)
+#players_turn(game_data)
+#dealers_turn(game_data)
