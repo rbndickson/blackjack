@@ -18,6 +18,7 @@
 #    If the dealer stays we compare the sums and the highest value wins.
 
 
+
 cards = { :players_cards => [], :dealers_cards => [],
           :deck => ['AH', '2H', '3H', '4H', '5H', '6H',
                     '7H', '8H', '9H', 'JH', 'QH', 'KH',
@@ -31,6 +32,7 @@ cards = { :players_cards => [], :dealers_cards => [],
 
 
 def draw_board(cards)
+  system 'clear'
   dealer_card_string = " Dealer  "
   player_card_string = " Player  "
 
@@ -54,15 +56,34 @@ def deal_card(cards, person)
   card_dealt = cards[:deck].sample
   cards[:deck].delete(card_dealt)
   cards[person] << card_dealt
+  draw_board(cards)
+end
+
+def dealers_turn(cards)
+
+end
+
+def hit_or_stay
+  puts 'Hit (h) or stay (s) ?'
+  next_move = gets.chomp.downcase
+  next_move
 end
 
 system 'clear'
 puts 'Blackjack 0.1!'
-# draw_board(play_state, dealer_display, player_display)
 
 deal_card(cards, :dealers_cards)
 deal_card(cards, :players_cards)
 deal_card(cards, :dealers_cards)
 deal_card(cards, :players_cards)
 
-draw_board(cards)
+def players_turn(cards)
+  while hit_or_stay == 'h'
+    deal_card(cards, :players_cards)
+    #check_for_21()
+    #check_for_bust()
+  end
+end
+
+players_turn(cards)
+dealers_turn(cards)
