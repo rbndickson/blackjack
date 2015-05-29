@@ -17,30 +17,38 @@
 #    If the dealer hits 21 the dealer wins.
 #    If the dealer stays we compare the sums and the highest value wins.
 
+# require 'pry'
 
-
-cards = { :players_cards => [], :dealers_cards => [],
+game_data = { :player => { :cards => [], :score => 0 },
+          :dealer => { :cards => [], :score => 0 },
           :deck => ['AH', '2H', '3H', '4H', '5H', '6H',
-                    '7H', '8H', '9H', 'JH', 'QH', 'KH',
+                    '7H', '8H', '9H', '10H', 'JH', 'QH', 'KH',
                     'AD', '2D', '3D', '4D', '5D', '6D',
-                    '7D', '8D', '9D', 'JD', 'QD', 'KD',
+                    '7D', '8D', '9D', '10D', 'JD', 'QD', 'KD',
                     'AC', '2C', '3C', '4C', '5C', '6C',
-                    '7C', '8C', '9C', 'JC', 'QC', 'KC',
+                    '7C', '8C', '9C', '10C', 'JC', 'QC', 'KC',
                     'AS', '2S', '3S', '4S', '5S', '6S',
-                    '7S', '8S', '9S', 'JS', 'QS', 'KS'] }
+                    '7S', '8S', '9S', '10S', 'JS', 'QS', 'KS'] }
 
 
+values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,]
 
-def draw_board(cards)
+
+card_values = Hash[game_data[:deck].zip values]
+
+def draw_board(game_data)
   system 'clear'
   dealer_card_string = " Dealer  "
   player_card_string = " Player  "
 
-  cards[:dealers_cards].each do |card|
+  game_data[:dealer][:cards].each do |card|
     dealer_card_string << card + ' '
   end
 
-  cards[:players_cards].each do |card|
+  game_data[:player][:cards].each do |card|
     player_card_string << card + ' '
   end
 
@@ -52,14 +60,18 @@ def draw_board(cards)
 end
 
 
-def deal_card(cards, person)
-  card_dealt = cards[:deck].sample
-  cards[:deck].delete(card_dealt)
-  cards[person] << card_dealt
-  draw_board(cards)
+def deal_card(game_data, person)
+  card_dealt = game_data[:deck].sample
+  game_data[:deck].delete(card_dealt)
+  game_data[person][:cards] << card_dealt
+  draw_board(game_data)
 end
 
-def dealers_turn(cards)
+# def update_total(game_data, person)
+#   game_data(person) =
+# end
+
+def dealers_turn(game_data)
 
 end
 
@@ -72,18 +84,18 @@ end
 system 'clear'
 puts 'Blackjack 0.1!'
 
-deal_card(cards, :dealers_cards)
-deal_card(cards, :players_cards)
-deal_card(cards, :dealers_cards)
-deal_card(cards, :players_cards)
+deal_card(game_data, :dealer)
+deal_card(game_data, :player)
+deal_card(game_data, :dealer)
+deal_card(game_data, :player)
 
-def players_turn(cards)
+def players_turn(game_data)
   while hit_or_stay == 'h'
-    deal_card(cards, :players_cards)
-    #check_for_21()
-    #check_for_bust()
+    deal_card(game_data, :player)
+    # check_for_21()
+    # check_for_bust()
   end
 end
 
-players_turn(cards)
-dealers_turn(cards)
+players_turn(game_data)
+dealers_turn(game_data)
