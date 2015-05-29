@@ -18,23 +18,51 @@
 #    If the dealer stays we compare the sums and the highest value wins.
 
 
-deck = ['AH', '2H', '3H', '4H', '5H', '6H', '7H', '8H', '9H', 'JH', 'QH', 'KH',
-        'AD', '2D', '3D', '4D', '5D', '6D', '7D', '8D', '9D', 'JD', 'QD', 'KD',
-        'AC', '2C', '3C', '4C', '5C', '6C', '7C', '8C', '9C', 'JC', 'QC', 'KC',
-        'AS', '2S', '3S', '4S', '5S', '6S', '7S', '8S', '9S', 'JS', 'QS', 'KS']
+cards = { :players_cards => [], :dealers_cards => [],
+          :deck => ['AH', '2H', '3H', '4H', '5H', '6H',
+                    '7H', '8H', '9H', 'JH', 'QH', 'KH',
+                    'AD', '2D', '3D', '4D', '5D', '6D',
+                    '7D', '8D', '9D', 'JD', 'QD', 'KD',
+                    'AC', '2C', '3C', '4C', '5C', '6C',
+                    '7C', '8C', '9C', 'JC', 'QC', 'KC',
+                    'AS', '2S', '3S', '4S', '5S', '6S',
+                    '7S', '8S', '9S', 'JS', 'QS', 'KS'] }
 
-dealer_display = " Dealer  "
-player_display = " Player  "
 
-def draw_board(play_s, dealer_display, player_display)
+
+def draw_board(cards)
+  dealer_card_string = " Dealer  "
+  player_card_string = " Player  "
+
+  cards[:dealers_cards].each do |card|
+    dealer_card_string << card + ' '
+  end
+
+  cards[:players_cards].each do |card|
+    player_card_string << card + ' '
+  end
+
   puts ''
-  puts dealer_display
+  puts dealer_card_string
   puts ''
-  puts player_display
+  puts player_card_string
   puts ''
 end
 
-play_state = {}
+
+def deal_card(cards, person)
+  card_dealt = cards[:deck].sample
+  cards[:deck].delete(card_dealt)
+  cards[person] << card_dealt
+end
+
 system 'clear'
 puts 'Blackjack 0.1!'
-draw_board(play_state, dealer_display, player_display)
+# draw_board(play_state, dealer_display, player_display)
+
+deal_card(cards, :dealers_cards)
+deal_card(cards, :players_cards)
+deal_card(cards, :dealers_cards)
+deal_card(cards, :players_cards)
+
+draw_board(cards)
