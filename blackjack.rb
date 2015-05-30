@@ -12,7 +12,7 @@
 
 # 3. If 'stay' the players score is saved and it is the dealers turn.
 
-# 5. Dealer must hit until she has >= 17.
+# 5. Dealer must hit until she has 17 or over.
 #    If the dealer busts the player wins.
 #    If the dealer hits 21 the dealer wins.
 #    If the dealer stays we compare the sums and the highest value wins.
@@ -91,40 +91,69 @@ def hit_or_stay
   gets.chomp.downcase
 end
 
-def check_for_21(game_data, person)
-  game_data[person][:score] == 21
+def players_score
+  game_data[:player][:score]
 end
 
 def players_turn(game_data)
-  while hit_or_stay == 'h'
+  while game_data[:player][:score] < 21 && hit_or_stay == 'h'
     deal_card(game_data, :player)
-    puts "You have 21 - you win!" if check_for_21(game_data, :player)
-    # check_for_bust()
   end
+  game_data[:player][:score]
 end
 
 def dealers_turn(game_data)
-
+  while game_data[:dealer][:score] < 17
+    deal_card(game_data, :dealer)
+  end
 end
 
-def player_wins(game_data)
-  if game_data[:player][:score] == 21
-    puts "You win you have 21!"
+def comparison(game_data)
+  if game_data[:player][:score] > game_data[:dealer][:score]
+    puts "You win!"
+  elsif game_data[:player][:score] < game_data[:dealer][:score]
+    puts "Dealer wins!"
   else
-    "you win, you have #{game_data[:player][:score]}, " \
-    "dealer has #{game_data[:dealer][:score]}"
+    puts "It's a draw!"
   end
 end
 
 def one_game
   game_data = initialize_game_data
-  p game_data
   initial_deal(game_data)
-  player_wins if check_for_21(game_data, :player)
-  players_turn(game_data)
-  dealers_turn(game_data)
+
+  if game_data[:player][:score] == 21
+    "You win!"
+
+  else
+
+    players_turn(game_data)
+    if game_data[:player][:score] > 21
+      puts "You have busted!"
+    elsif game_data[:player][:score] == 21
+      puts "You win!"
+    else
+
+      dealers_turn(game_data)
+      if game_data[:dealer][:score] < 21
+        comparison(game_data)
+      elsif game_data[:dealer][:score] == 21
+        puts "Dealer wins!"
+      elsif game_data[:dealer][:score] > 21
+        puts "Dealer has busted - You win!"
+      end
+
+    end
+  end
 end
 
 system 'clear'
 puts 'Blackjack 0.1!'
-one_game
+
+loop do
+  one_game
+  puts 'Play again? (y/n)'
+  break if gets.chomp.downcase == 'n'
+end
+
+puts 'Thank you for playing Blackjack'
