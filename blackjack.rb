@@ -19,27 +19,35 @@
 
 require 'pry'
 
-game_data = { :player => { :hand => [], :score => 0 },
-          :dealer => { :hand => [], :score => 0 },
-          :deck => ['AH', '2H', '3H', '4H', '5H', '6H',
-                    '7H', '8H', '9H', '10H', 'JH', 'QH', 'KH',
-                    'AD', '2D', '3D', '4D', '5D', '6D',
-                    '7D', '8D', '9D', '10D', 'JD', 'QD', 'KD',
-                    'AC', '2C', '3C', '4C', '5C', '6C',
-                    '7C', '8C', '9C', '10C', 'JC', 'QC', 'KC',
-                    'AS', '2S', '3S', '4S', '5S', '6S',
-                    '7S', '8S', '9S', '10S', 'JS', 'QS', 'KS'] }
+def initialize_game_data
+  game_data = { :player => { :hand => [], :score => 0 },
+            :dealer => { :hand => [], :score => 0 },
+            :deck => ['AH', '2H', '3H', '4H', '5H', '6H',
+                      '7H', '8H', '9H', '10H', 'JH', 'QH', 'KH',
+                      'AD', '2D', '3D', '4D', '5D', '6D',
+                      '7D', '8D', '9D', '10D', 'JD', 'QD', 'KD',
+                      'AC', '2C', '3C', '4C', '5C', '6C',
+                      '7C', '8C', '9C', '10C', 'JC', 'QC', 'KC',
+                      'AS', '2S', '3S', '4S', '5S', '6S',
+                      '7S', '8S', '9S', '10S', 'JS', 'QS', 'KS'] }
 
 
-values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,]
+  values = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+            11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+            11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
+            11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,]
 
+  # adds a hash of the cards and their values to game_data
+  game_data[:card_values] = Hash[game_data[:deck].zip values]
+  game_data
+end
 
-game_data[:card_values] = Hash[game_data[:deck].zip values]
-
-
+def initial_deal(game_data)
+  deal_card(game_data, :dealer)
+  deal_card(game_data, :player)
+  deal_card(game_data, :dealer)
+  deal_card(game_data, :player)
+end
 
 def draw_board(game_data)
   system 'clear'
@@ -78,31 +86,45 @@ def update_total(game_data, person)
   game_data[person][:score] = sum
 end
 
-def dealers_turn(game_data)
-
-end
-
 def hit_or_stay
   puts 'Hit (h) or stay (s) ?'
-  next_move = gets.chomp.downcase
-  next_move
+  gets.chomp.downcase
 end
 
-system 'clear'
-puts 'Blackjack 0.1!'
-
-deal_card(game_data, :dealer)
-deal_card(game_data, :player)
-deal_card(game_data, :dealer)
-deal_card(game_data, :player)
+def check_for_21(game_data, person)
+  game_data[person][:score] == 21
+end
 
 def players_turn(game_data)
   while hit_or_stay == 'h'
     deal_card(game_data, :player)
-    # check_for_21
+    puts "You have 21 - you win!" if check_for_21(game_data, :player)
     # check_for_bust()
   end
 end
 
-#players_turn(game_data)
-#dealers_turn(game_data)
+def dealers_turn(game_data)
+
+end
+
+def player_wins(game_data)
+  if game_data[:player][:score] == 21
+    puts "You win you have 21!"
+  else
+    "you win, you have #{game_data[:player][:score]}, " \
+    "dealer has #{game_data[:dealer][:score]}"
+  end
+end
+
+def one_game
+  game_data = initialize_game_data
+  p game_data
+  initial_deal(game_data)
+  player_wins if check_for_21(game_data, :player)
+  players_turn(game_data)
+  dealers_turn(game_data)
+end
+
+system 'clear'
+puts 'Blackjack 0.1!'
+one_game
