@@ -42,6 +42,7 @@ def initial_deal(game_data)
   deal_card(game_data, :player)
   deal_card(game_data, :dealer)
   deal_card(game_data, :player)
+  draw_board_hidden(game_data)
 end
 
 def emoji_sub(card)
@@ -49,6 +50,27 @@ def emoji_sub(card)
   card = card.gsub('D', "\xE2\x99\xA6")
   card = card.gsub('C', "\xE2\x99\xA3")
   card.gsub('S', "\xE2\x99\xA0")
+end
+
+def draw_board_hidden(game_data)
+  system 'clear'
+  dealer_card_string = ' Dealer  ** '
+  player_card_string = ' Player  '
+
+
+  dealer_card_string << emoji_sub(game_data[:dealer][:hand][1]) + ' '
+
+  game_data[:player][:hand].each do |card|
+    player_card_string << emoji_sub(card) + ' '
+  end
+
+  puts ''
+  puts dealer_card_string
+  puts ''
+  puts player_card_string
+  puts ''
+  # puts "Dealer has #{game_data[:dealer][:score]}"
+  # puts "Player has #{game_data[:player][:score]}"
 end
 
 def draw_board(game_data)
@@ -69,8 +91,8 @@ def draw_board(game_data)
   puts ''
   puts player_card_string
   puts ''
-  puts "Dealer has #{game_data[:dealer][:score]}"
-  puts "Player has #{game_data[:player][:score]}"
+  # puts "Dealer has #{game_data[:dealer][:score]}"
+  # puts "Player has #{game_data[:player][:score]}"
 end
 
 def deal_card(game_data, person)
@@ -78,7 +100,6 @@ def deal_card(game_data, person)
   game_data[:deck].delete(card_dealt)
   game_data[person][:hand] << card_dealt
   update_total(game_data, person)
-  draw_board(game_data)
 end
 
 def update_total(game_data, person)
@@ -88,7 +109,7 @@ def update_total(game_data, person)
   if game_data[person][:hand].to_s.include?("A") && sum > 21
     sum = sum - 10
   end
-  
+
   game_data[person][:score] = sum
 end
 
@@ -102,8 +123,9 @@ def players_score
 end
 
 def players_turn(game_data)
-  while game_data[:player][:score] < 21 && hit_or_stay == 'h'
+  while game_data[:player][:score] < 22 && hit_or_stay == 'h'
     deal_card(game_data, :player)
+    draw_board_hidden(game_data)
   end
   game_data[:player][:score]
 end
@@ -112,6 +134,7 @@ def dealers_turn(game_data)
   while game_data[:dealer][:score] < 17
     deal_card(game_data, :dealer)
   end
+  draw_board(game_data)
 end
 
 def comparison(game_data)
@@ -129,15 +152,16 @@ def one_game
   initial_deal(game_data)
 
   if game_data[:player][:score] == 21
-    puts 'You win!'
-
+    draw_board
+    if game_data[:dealer][:score] == 21
+      puts "Push"
+    else
+      puts "You win with Blackjack!"
+    end
   else
-
     players_turn(game_data)
     if game_data[:player][:score] > 21
       puts 'You have busted Dealer wins!'
-    elsif game_data[:player][:score] == 21
-      puts 'You win!'
     else
 
       dealers_turn(game_data)
@@ -148,7 +172,6 @@ def one_game
       elsif game_data[:dealer][:score] > 21
         puts 'Dealer has busted - You win!'
       end
-
     end
   end
 end
