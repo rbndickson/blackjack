@@ -84,6 +84,11 @@ end
 def update_total(game_data, person)
   sum = 0
   game_data[person][:hand].each { |card| sum += game_data[:card_values][card] }
+
+  if game_data[person][:hand].to_s.include?("A") && sum > 21
+    sum = sum - 10
+  end
+  
   game_data[person][:score] = sum
 end
 
