@@ -30,7 +30,7 @@ def initialize_game_data
   values = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
             11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
             11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,
-            11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10,]
+            11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
 
   # adds a hash of the cards and their values to game_data
   game_data[:card_values] = Hash[game_data[:deck].zip values]
@@ -44,17 +44,24 @@ def initial_deal(game_data)
   deal_card(game_data, :player)
 end
 
+def emoji_sub(card)
+  card = card.gsub('H', "\xE2\x99\xA5")
+  card = card.gsub('D', "\xE2\x99\xA6")
+  card = card.gsub('C', "\xE2\x99\xA3")
+  card.gsub('S', "\xE2\x99\xA0")
+end
+
 def draw_board(game_data)
   system 'clear'
-  dealer_card_string = " Dealer  "
-  player_card_string = " Player  "
+  dealer_card_string = ' Dealer  '
+  player_card_string = ' Player  '
 
   game_data[:dealer][:hand].each do |card|
-    dealer_card_string << card + ' '
+    dealer_card_string << emoji_sub(card) + ' '
   end
 
   game_data[:player][:hand].each do |card|
-    player_card_string << card + ' '
+    player_card_string << emoji_sub(card) + ' '
   end
 
   puts ''
@@ -65,7 +72,6 @@ def draw_board(game_data)
   puts "Dealer has #{game_data[:dealer][:score]}"
   puts "Player has #{game_data[:player][:score]}"
 end
-
 
 def deal_card(game_data, person)
   card_dealt = game_data[:deck].sample
@@ -105,9 +111,9 @@ end
 
 def comparison(game_data)
   if game_data[:player][:score] > game_data[:dealer][:score]
-    puts "You win!"
+    puts 'You win!'
   elsif game_data[:player][:score] < game_data[:dealer][:score]
-    puts "Dealer wins!"
+    puts 'Dealer wins!'
   else
     puts "It's a draw!"
   end
@@ -118,24 +124,24 @@ def one_game
   initial_deal(game_data)
 
   if game_data[:player][:score] == 21
-    puts "You win!"
+    puts 'You win!'
 
   else
 
     players_turn(game_data)
     if game_data[:player][:score] > 21
-      puts "You have busted Dealer wins!"
+      puts 'You have busted Dealer wins!'
     elsif game_data[:player][:score] == 21
-      puts "You win!"
+      puts 'You win!'
     else
 
       dealers_turn(game_data)
       if game_data[:dealer][:score] < 21
         comparison(game_data)
       elsif game_data[:dealer][:score] == 21
-        puts "Dealer wins!"
+        puts 'Dealer wins!'
       elsif game_data[:dealer][:score] > 21
-        puts "Dealer has busted - You win!"
+        puts 'Dealer has busted - You win!'
       end
 
     end
