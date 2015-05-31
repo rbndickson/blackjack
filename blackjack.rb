@@ -1,24 +1,5 @@
 # blackjack.rb
 
-# 1. Both player and dealer are dealt 2 cards.
-#    2 - 9 are worth their value. J, Q, K are 10, A is 1 or 11.
-
-# 2. Player can choose 'hit' or 'stay'.
-
-# 3. If 'hit' player gets another card
-# 4. If the sum of the cards > 21 the player has busted.
-#    If sum is 21 the player wins.
-#    If sum is < 21 the player chooses to hit or stay again (and repeat above).
-
-# 3. If 'stay' the players score is saved and it is the dealers turn.
-
-# 5. Dealer must hit until she has 17 or over.
-#    If the dealer busts the player wins.
-#    If the dealer hits 21 the dealer wins.
-#    If the dealer stays we compare the sums and the highest value wins.
-
-require 'pry'
-
 def initialize_game_data
   game_data = { player: { hand: [], score: 0 },
                 dealer: { hand: [], score: 0 },
@@ -38,11 +19,10 @@ def initialize_game_data
 end
 
 def initial_deal(game_data)
-  deal_card(game_data, :dealer)
   deal_card(game_data, :player)
   deal_card(game_data, :dealer)
   deal_card(game_data, :player)
-  draw_board_hidden(game_data)
+  deal_card(game_data, :dealer)
 end
 
 def emoji_sub(card)
@@ -53,10 +33,10 @@ def emoji_sub(card)
 end
 
 def draw_board_hidden(game_data)
+  sleep 1.5
   system 'clear'
   dealer_card_string = ' Dealer  ** '
   player_card_string = ' Player  '
-
 
   dealer_card_string << emoji_sub(game_data[:dealer][:hand][1]) + ' '
 
@@ -69,11 +49,10 @@ def draw_board_hidden(game_data)
   puts ''
   puts player_card_string
   puts ''
-  # puts "Dealer has #{game_data[:dealer][:score]}"
-  # puts "Player has #{game_data[:player][:score]}"
 end
 
 def draw_board(game_data)
+  sleep 1.5
   system 'clear'
   dealer_card_string = ' Dealer  '
   player_card_string = ' Player  '
@@ -91,8 +70,6 @@ def draw_board(game_data)
   puts ''
   puts player_card_string
   puts ''
-  # puts "Dealer has #{game_data[:dealer][:score]}"
-  # puts "Player has #{game_data[:player][:score]}"
 end
 
 def deal_card(game_data, person)
@@ -131,10 +108,11 @@ def players_turn(game_data)
 end
 
 def dealers_turn(game_data)
+  draw_board(game_data)
   while game_data[:dealer][:score] < 17
     deal_card(game_data, :dealer)
+    draw_board(game_data)
   end
-  draw_board(game_data)
 end
 
 def comparison(game_data)
@@ -150,7 +128,7 @@ end
 def one_game
   game_data = initialize_game_data
   initial_deal(game_data)
-
+  draw_board_hidden(game_data)
   if game_data[:player][:score] == 21
     draw_board
     if game_data[:dealer][:score] == 21
