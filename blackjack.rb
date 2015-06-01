@@ -3,6 +3,7 @@
 def initialize_game_data
   game_data = { player: { name: 'Player', hand: [], score: 0 },
                 dealer: { name: 'Dealer', hand: [], score: 0 },
+                turn: 'Player',
                 deck: %w(AH 2H 3H 4H 5H 6H 7H 8H 9H 10H JH QH KH
                          AD 2D 3D 4D 5D 6D 7D 8D 9D 10D JD QD KD
                          AC 2C 3C 4C 5C 6C 7C 8C 9C 10C JC QC KC
@@ -40,22 +41,13 @@ def generate_display_string(game_data, person)
   display_string
 end
 
-def draw_board_hidden(game_data)
+def draw_board(game_data)
   sleep 1.5
   system 'clear'
   dealer_card_string = generate_display_string(game_data, :dealer)
-  dealer_card_string[9..10] = '**'
+  dealer_card_string[9..10] = '**' if game_data[:turn] == 'Player'
   player_card_string = generate_display_string(game_data, :player)
   puts "\n#{dealer_card_string}\n\n#{player_card_string}\n\n"
-end
-
-def draw_board_all(game_data)
-  sleep 1.5
-  system 'clear'
-  dealer_card_string = generate_display_string(game_data, :dealer)
-  player_card_string = generate_display_string(game_data, :player)
-  puts "\n#{dealer_card_string}\n\n#{player_card_string}\n\n"
-
 end
 
 def deal_card(game_data, person)
@@ -82,16 +74,16 @@ end
 def players_turn(game_data)
   while game_data[:player][:score] < 22 && hit_or_stay == 'h'
     deal_card(game_data, :player)
-    draw_board_hidden(game_data)
+    draw_board(game_data)
   end
   game_data[:player][:score]
 end
 
 def dealers_turn(game_data)
-  draw_board_all(game_data)
+  draw_board(game_data)
   while game_data[:dealer][:score] < 17
     deal_card(game_data, :dealer)
-    draw_board_all(game_data)
+    draw_board(game_data)
   end
 end
 
@@ -108,9 +100,9 @@ end
 def one_game
   game_data = initialize_game_data
   initial_deal(game_data)
-  draw_board_hidden(game_data)
+  draw_board(game_data)
   if game_data[:player][:score] == 21
-    draw_board_all(game_data)
+    draw_board(game_data)
     if game_data[:dealer][:score] == 21
       puts "Push"
     else
@@ -121,7 +113,7 @@ def one_game
     if game_data[:player][:score] > 21
       puts 'You have busted Dealer wins!'
     else
-
+      game_data[:turn] = 'Dealer'
       dealers_turn(game_data)
       if game_data[:dealer][:score] < 21
         comparison(game_data)
