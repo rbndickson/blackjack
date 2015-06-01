@@ -1,5 +1,7 @@
 # blackjack.rb
 
+require 'pry'
+
 def initialize_game_data(player_name)
   suits = %w(H D C S)
   card_types = %w(A 2 3 4 5 6 7 8 9 10 J Q K)
@@ -11,7 +13,7 @@ def initialize_game_data(player_name)
   values.each { |value| 4.times { values_array << value } }
   values_hash = Hash[deck_array.zip values_array]
 
-  game_data = { player: { name: player_name, hand: [], score: 0, },
+  game_data = { player: { name: player_name, hand: [], score: 0 },
                 dealer: { name: 'Dealer', hand: [], score: 0 },
                 turn: 'Player',
                 deck: deck_array, card_values: values_hash }
@@ -41,6 +43,7 @@ def generate_display_string(game_data, person)
   game_data[person][:hand].each do |card|
     display_string << emoji_sub(card) + '  '
   end
+
   display_string
 end
 
@@ -63,7 +66,17 @@ end
 def update_total(game_data, person)
   sum = 0
   game_data[person][:hand].each { |card| sum += game_data[:card_values][card] }
-  sum -= 10 if game_data[person][:hand].to_s.include?('A') && sum > 21
+
+  number_aces = 0
+  game_data[person][:hand].each do |card|
+    number_aces += 1 if card.include?('A')
+  end
+
+  while sum > 21 && number_aces > 0
+    sum -= 10
+    number_aces -= 1
+  end
+
   game_data[person][:score] = sum
 end
 
@@ -74,6 +87,7 @@ def hit_or_stay
     puts 'Please re-enter - Hit (h) or stay (s) ?'
     answer = gets.chomp.downcase
   end
+  
   answer
 end
 
@@ -116,10 +130,10 @@ def one_game(player_name)
     end
   else
     players_turn(game_data)
+    game_data[:turn] = 'Dealer'
     if game_data[:player][:score] > 21
       puts 'You have busted Dealer wins!'
     else
-      game_data[:turn] = 'Dealer'
       dealers_turn(game_data)
       if game_data[:dealer][:score] < 21
         comparison(game_data)
@@ -130,6 +144,8 @@ def one_game(player_name)
       end
     end
   end
+  puts "#{player_name} #{game_data[:player][:score]} vs " \
+  "Dealer #{game_data[:dealer][:score]}"
 end
 
 system 'clear'
