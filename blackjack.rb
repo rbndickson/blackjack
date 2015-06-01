@@ -1,7 +1,7 @@
 # blackjack.rb
 
-def initialize_game_data
-  game_data = { player: { name: 'Player', hand: [], score: 0 },
+def initialize_game_data(player_name)
+  game_data = { player: { name: player_name, hand: [], score: 0 },
                 dealer: { name: 'Dealer', hand: [], score: 0 },
                 turn: 'Player',
                 deck: %w(AH 2H 3H 4H 5H 6H 7H 8H 9H 10H JH QH KH
@@ -26,6 +26,16 @@ def initial_deal(game_data)
   end
 end
 
+def initial_blackjack(game_data)
+  game_data[:turn] = 'Dealer'
+  draw_board(game_data)
+  if game_data[:dealer][:score] == 21
+    puts "Push"
+  else
+    puts "You win with Blackjack!"
+  end
+end
+
 def emoji_sub(card)
   card = card.gsub('H', "\xE2\x99\xA5")
   card = card.gsub('D', "\xE2\x99\xA6")
@@ -34,7 +44,10 @@ def emoji_sub(card)
 end
 
 def generate_display_string(game_data, person)
-  display_string = " #{game_data[person][:name]}  "
+  spacing = 20 - game_data[person][:name].length
+  spacing_string = ""
+  spacing.times { spacing_string << " " }
+  display_string = " #{game_data[person][:name]}#{spacing_string}"
   game_data[person][:hand].each do |card|
     display_string << emoji_sub(card) + ' '
   end
@@ -45,7 +58,7 @@ def draw_board(game_data)
   sleep 1.5
   system 'clear'
   dealer_card_string = generate_display_string(game_data, :dealer)
-  dealer_card_string[9..10] = '**' if game_data[:turn] == 'Player'
+  dealer_card_string[21..22] = '**' if game_data[:turn] == 'Player'
   player_card_string = generate_display_string(game_data, :player)
   puts "\n#{dealer_card_string}\n\n#{player_card_string}\n\n"
 end
@@ -97,11 +110,12 @@ def comparison(game_data)
   end
 end
 
-def one_game
-  game_data = initialize_game_data
+def one_game(player_name)
+  game_data = initialize_game_data(player_name)
   initial_deal(game_data)
   draw_board(game_data)
   if game_data[:player][:score] == 21
+    game_data[:turn] = 'Dealer'
     draw_board(game_data)
     if game_data[:dealer][:score] == 21
       puts "Push"
@@ -128,9 +142,11 @@ end
 
 system 'clear'
 puts 'Blackjack 0.1!'
+puts 'Enter player name:'
+player_name = gets.chomp
 
 loop do
-  one_game
+  one_game(player_name)
   puts 'Play again? (y/n)'
   break if gets.chomp.downcase == 'n'
 end
