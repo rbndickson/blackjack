@@ -1,7 +1,5 @@
 # blackjack.rb
 
-require 'pry'
-
 def initialize_game_data(player_name)
   suits = %w(H D C S)
   card_types = %w(A 2 3 4 5 6 7 8 9 10 J Q K)
@@ -87,7 +85,7 @@ def hit_or_stay
     puts 'Please re-enter - Hit (h) or stay (s) ?'
     answer = gets.chomp.downcase
   end
-  
+
   answer
 end
 
