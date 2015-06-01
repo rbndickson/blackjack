@@ -26,16 +26,6 @@ def initial_deal(game_data)
   end
 end
 
-def initial_blackjack(game_data)
-  game_data[:turn] = 'Dealer'
-  draw_board(game_data)
-  if game_data[:dealer][:score] == 21
-    puts 'Push'
-  else
-    puts 'You win with Blackjack!'
-  end
-end
-
 def emoji_sub(card)
   card = card.gsub('H', "\xE2\x99\xA5")
   card = card.gsub('D', "\xE2\x99\xA6")
@@ -92,7 +82,6 @@ def players_turn(game_data)
     deal_card(game_data, :player)
     draw_board(game_data)
   end
-  game_data[:player][:score]
 end
 
 def dealers_turn(game_data)
@@ -121,7 +110,7 @@ def one_game(player_name)
     game_data[:turn] = 'Dealer'
     draw_board(game_data)
     if game_data[:dealer][:score] == 21
-      puts 'Push'
+      puts "It's a draw!"
     else
       puts 'You win with Blackjack!'
     end
@@ -135,7 +124,7 @@ def one_game(player_name)
       if game_data[:dealer][:score] < 21
         comparison(game_data)
       elsif game_data[:dealer][:score] == 21
-        puts 'Dealer wins!'
+        puts 'Dealer wins with Blackjack!'
       elsif game_data[:dealer][:score] > 21
         puts 'Dealer has busted - You win!'
       end
