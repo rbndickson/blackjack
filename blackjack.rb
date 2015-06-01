@@ -156,4 +156,4 @@ loop do
   break if gets.chomp.downcase == 'n'
 end
 
-puts 'Thank you for playing Blackjack'
+puts "Thank you for playing Blackjack #{player_name}"
