@@ -80,8 +80,13 @@ def update_total(game_data, person)
 end
 
 def hit_or_stay
+  accepted_answers = ['h', 's']
   puts 'Hit (h) or stay (s) ?'
-  gets.chomp.downcase
+  answer = gets.chomp.downcase
+  until accepted_answers.include?(answer)
+    puts 'Please re-enter - Hit (h) or stay (s) ?'
+  end
+  answer
 end
 
 def players_turn(game_data)
