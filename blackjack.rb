@@ -79,10 +79,6 @@ def hit_or_stay
   gets.chomp.downcase
 end
 
-def players_score
-  game_data[:player][:score]
-end
-
 def players_turn(game_data)
   while game_data[:player][:score] < 22 && hit_or_stay == 'h'
     deal_card(game_data, :player)
