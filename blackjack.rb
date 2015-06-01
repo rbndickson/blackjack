@@ -8,7 +8,10 @@ def initialize_game_data(player_name)
   # Creates a hash of all cards and their values
   values = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
   values_array = []
-  values.each { |value| 4.times { values_array << value } }
+  values.each do |value|
+    4.times { values_array << value }
+  end
+
   values_hash = Hash[deck_array.zip values_array]
 
   game_data = { player: { name: player_name, hand: [], score: 0 },
@@ -33,7 +36,7 @@ def emoji_sub(card)
   card.gsub('S', "\xE2\x99\xA0")
 end
 
-def generate_display_string(game_data, person)
+def display_cards(game_data, person)
   spacing = 20 - game_data[person][:name].length
   spacing_string = ''
   spacing.times { spacing_string << ' ' }
@@ -46,11 +49,11 @@ def generate_display_string(game_data, person)
 end
 
 def draw_board(game_data)
-  sleep 1.5
+  sleep 1.2
   system 'clear'
-  dealer_card_string = generate_display_string(game_data, :dealer)
+  dealer_card_string = display_cards(game_data, :dealer)
   dealer_card_string[21..23] = '***' if game_data[:turn] == 'Player'
-  player_card_string = generate_display_string(game_data, :player)
+  player_card_string = display_cards(game_data, :player)
   puts "\n#{dealer_card_string}\n\n#{player_card_string}\n\n"
 end
 
