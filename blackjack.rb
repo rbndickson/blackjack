@@ -1,8 +1,8 @@
 # blackjack.rb
 
 def initialize_game_data
-  game_data = { player: { hand: [], score: 0 },
-                dealer: { hand: [], score: 0 },
+  game_data = { player: { name: 'Player', hand: [], score: 0 },
+                dealer: { name: 'Dealer', hand: [], score: 0 },
                 deck: %w(AH 2H 3H 4H 5H 6H 7H 8H 9H 10H JH QH KH
                          AD 2D 3D 4D 5D 6D 7D 8D 9D 10D JD QD KD
                          AC 2C 3C 4C 5C 6C 7C 8C 9C 10C JC QC KC
@@ -19,10 +19,10 @@ def initialize_game_data
 end
 
 def initial_deal(game_data)
-  deal_card(game_data, :player)
-  deal_card(game_data, :dealer)
-  deal_card(game_data, :player)
-  deal_card(game_data, :dealer)
+  2.times do
+    deal_card(game_data, :player)
+    deal_card(game_data, :dealer)
+  end
 end
 
 def emoji_sub(card)
@@ -32,44 +32,30 @@ def emoji_sub(card)
   card.gsub('S', "\xE2\x99\xA0")
 end
 
+def generate_display_string(game_data, person)
+  display_string = " #{game_data[person][:name]}  "
+  game_data[person][:hand].each do |card|
+    display_string << emoji_sub(card) + ' '
+  end
+  display_string
+end
+
 def draw_board_hidden(game_data)
   sleep 1.5
   system 'clear'
-  dealer_card_string = ' Dealer  ** '
-  player_card_string = ' Player  '
-
-  dealer_card_string << emoji_sub(game_data[:dealer][:hand][1]) + ' '
-
-  game_data[:player][:hand].each do |card|
-    player_card_string << emoji_sub(card) + ' '
-  end
-
-  puts ''
-  puts dealer_card_string
-  puts ''
-  puts player_card_string
-  puts ''
+  dealer_card_string = generate_display_string(game_data, :dealer)
+  dealer_card_string[9..10] = '**'
+  player_card_string = generate_display_string(game_data, :player)
+  puts "\n#{dealer_card_string}\n\n#{player_card_string}\n\n"
 end
 
-def draw_board(game_data)
+def draw_board_all(game_data)
   sleep 1.5
   system 'clear'
-  dealer_card_string = ' Dealer  '
-  player_card_string = ' Player  '
+  dealer_card_string = generate_display_string(game_data, :dealer)
+  player_card_string = generate_display_string(game_data, :player)
+  puts "\n#{dealer_card_string}\n\n#{player_card_string}\n\n"
 
-  game_data[:dealer][:hand].each do |card|
-    dealer_card_string << emoji_sub(card) + ' '
-  end
-
-  game_data[:player][:hand].each do |card|
-    player_card_string << emoji_sub(card) + ' '
-  end
-
-  puts ''
-  puts dealer_card_string
-  puts ''
-  puts player_card_string
-  puts ''
 end
 
 def deal_card(game_data, person)
@@ -82,11 +68,9 @@ end
 def update_total(game_data, person)
   sum = 0
   game_data[person][:hand].each { |card| sum += game_data[:card_values][card] }
-
   if game_data[person][:hand].to_s.include?("A") && sum > 21
     sum = sum - 10
   end
-
   game_data[person][:score] = sum
 end
 
@@ -108,10 +92,10 @@ def players_turn(game_data)
 end
 
 def dealers_turn(game_data)
-  draw_board(game_data)
+  draw_board_all(game_data)
   while game_data[:dealer][:score] < 17
     deal_card(game_data, :dealer)
-    draw_board(game_data)
+    draw_board_all(game_data)
   end
 end
 
@@ -130,7 +114,7 @@ def one_game
   initial_deal(game_data)
   draw_board_hidden(game_data)
   if game_data[:player][:score] == 21
-    draw_board
+    draw_board_all(game_data)
     if game_data[:dealer][:score] == 21
       puts "Push"
     else
