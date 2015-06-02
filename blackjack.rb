@@ -65,20 +65,22 @@ def deal_card(game_data, person)
 end
 
 def update_total(game_data, person)
-  sum = 0
-  game_data[person][:hand].each { |card| sum += game_data[:card_values][card] }
+
+  total = game_data[person][:hand].inject(0) do |sum, card|
+    sum + game_data[:card_values][card]
+  end
 
   number_aces = 0
   game_data[person][:hand].each do |card|
     number_aces += 1 if card.include?('A')
   end
 
-  while sum > 21 && number_aces > 0
-    sum -= 10
+  while total > 21 && number_aces > 0
+    total -= 10
     number_aces -= 1
   end
 
-  game_data[person][:score] = sum
+  game_data[person][:score] = total
 end
 
 def hit_or_stay
